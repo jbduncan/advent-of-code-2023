@@ -1,4 +1,4 @@
-package com.github.jbduncan.adventofcode2023.day1
+package com.github.jbduncan.adventofcode2023.star2
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Nested

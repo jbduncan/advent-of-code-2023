@@ -1,4 +1,4 @@
-package com.github.jbduncan.adventofcode2023.day1
+package com.github.jbduncan.adventofcode2023.star2
 
 import java.io.PrintWriter
 import java.lang.AssertionError
