@@ -51,10 +51,10 @@ class AppKtTests {
         inner class WhenRunningApp {
 
             @Test
-            fun thenItReturns54_605() {
+            fun thenItReturns55_429() {
                 val puzzleInput = puzzleInput()
                 val out = executeAndReturnStdOut(puzzleInput)
-                assertThat(out).isEqualTo("54605")
+                assertThat(out).isEqualTo("55429")
             }
         }
     }
