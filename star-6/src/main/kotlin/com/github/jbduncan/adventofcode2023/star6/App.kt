@@ -1,4 +1,4 @@
-package com.github.jbduncan.adventofcode2023.star5
+package com.github.jbduncan.adventofcode2023.star6
 
 import java.io.PrintWriter
 import java.lang.AssertionError
@@ -41,7 +41,12 @@ class Grid(private val puzzleInput: String) {
                     }
                     val end = x - 1
 
-                    possiblePartNumber(y, start, end)?.let(result::add)
+                    if (isSurroundedBySymbol(y, start, end)) {
+                        val digits =
+                            (start..end)
+                                .joinToString(separator = "") { grid[y][it].toString() }
+                        result.add(PartNumber(digits.toInt()))
+                    }
                 } else {
                     x++
                 }
@@ -50,14 +55,6 @@ class Grid(private val puzzleInput: String) {
 
         return result
     }
-
-    private fun possiblePartNumber(y: Int, start: Int, end: Int): PartNumber? =
-        if (isSurroundedBySymbol(y, start, end)) {
-            val digits =
-                (start..end)
-                    .joinToString(separator = "") { grid[y][it].toString() }
-            PartNumber(digits.toInt())
-        } else null
 
     private fun isSurroundedBySymbol(height: Int, start: Int, end: Int): Boolean {
         return (start..end).any { x ->
