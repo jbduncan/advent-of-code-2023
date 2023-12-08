@@ -10,11 +10,15 @@ fun main() {
 }
 
 internal fun execute(out: PrintWriter, puzzleInput: String) {
-    val result = Grid(puzzleInput).partNumbers().sumOf(PartNumber::value)
+    val result = //
+        Grid(puzzleInput).gearToTwoPartNumbers() //
+            .asSequence() //
+            .map { (_, partNumbers) -> partNumbers.first.value * partNumbers.second.value } //
+            .sum()
     out.println(result)
 }
 
-class Grid(private val puzzleInput: String) {
+class Grid(puzzleInput: String) {
     private val height = puzzleInput.lineSequence().count()
     private val width = puzzleInput.lineSequence().first().length
 
@@ -28,8 +32,8 @@ class Grid(private val puzzleInput: String) {
         }
     }
 
-    fun partNumbers(): List<PartNumber> {
-        val result = mutableListOf<PartNumber>()
+    fun gearToTwoPartNumbers(): Map<Gear, Pair<PartNumber, PartNumber>> {
+        val gearToPartNumbers = mutableMapOf<Gear, MutableList<PartNumber>>()
 
         for (y in (0 until height)) {
             var x = 0
@@ -41,11 +45,10 @@ class Grid(private val puzzleInput: String) {
                     }
                     val end = x - 1
 
-                    if (isSurroundedBySymbol(y, start, end)) {
-                        val digits =
-                            (start..end)
-                                .joinToString(separator = "") { grid[y][it].toString() }
-                        result.add(PartNumber(digits.toInt()))
+                    possibleNearbyGear(y, start, end)?.let { gear ->
+                        val digits = (start..end).joinToString(separator = "") { grid[y][it].toString() }
+                        val partNumber = PartNumber(digits.toInt())
+                        gearToPartNumbers.getOrPut(gear) { mutableListOf() }.add(partNumber)
                     }
                 } else {
                     x++
@@ -53,42 +56,51 @@ class Grid(private val puzzleInput: String) {
             }
         }
 
-        return result
-    }
-
-    private fun isSurroundedBySymbol(height: Int, start: Int, end: Int): Boolean {
-        return (start..end).any { x ->
-            neighbours(x, height).any {
-                !it.isDigit() && it != '.'
+        return buildMap {
+            for ((gear, partNumbers) in gearToPartNumbers) {
+                if (partNumbers.size == 2) {
+                    put(gear, Pair(partNumbers[0], partNumbers[1]))
+                }
             }
         }
     }
 
-    private fun neighbours(x: Int, y: Int): List<Char> {
+    private fun possibleNearbyGear(height: Int, start: Int, end: Int): Gear? {
+        (start..end).forEach { x ->
+            neighbours(x, height).forEach { neighbour ->
+                if (neighbour.value == '*') {
+                    return Gear(neighbour.x, neighbour.y)
+                }
+            }
+        }
+        return null
+    }
+
+    private fun neighbours(x: Int, y: Int): List<Cell> {
         return buildList {
             if (y - 1 >= 0 && x - 1 >= 0) {
-                add(grid[y - 1][x - 1])
+                add(Cell(grid[y - 1][x - 1], y - 1, x - 1))
             }
             if (x - 1 >= 0) {
-                add(grid[y][x - 1])
+                add(Cell(grid[y][x - 1], y, x - 1))
             }
             if (y + 1 < width && x - 1 >= 0) {
-                add(grid[y + 1][x - 1])
+                add(Cell(grid[y + 1][x - 1], y + 1, x - 1))
             }
             if (y + 1 < width) {
-                add(grid[y + 1][x])
+                add(Cell(grid[y + 1][x], y + 1, x))
             }
             if (y + 1 < width && x + 1 < height) {
-                add(grid[y + 1][x + 1])
+                add(Cell(grid[y + 1][x + 1], y + 1, x + 1))
             }
             if (x + 1 < height) {
-                add(grid[y][x + 1])
+                add(Cell(grid[y][x + 1], y, x + 1))
             }
             if (y - 1 >= 0 && x + 1 < height) {
-                add(grid[y - 1][x + 1])
+                add(Cell(grid[y - 1][x + 1], y - 1, x + 1))
             }
             if (y - 1 >= 0) {
-                add(grid[y - 1][x])
+                add(Cell(grid[y - 1][x], y - 1, x))
             }
         }
     }
@@ -96,6 +108,14 @@ class Grid(private val puzzleInput: String) {
 
 data class PartNumber(
     val value: Int
+)
+
+data class Gear(
+    val x: Int, val y: Int
+)
+
+data class Cell(
+    val value: Char, val x: Int, val y: Int
 )
 
 private fun puzzleInput(): String = //
