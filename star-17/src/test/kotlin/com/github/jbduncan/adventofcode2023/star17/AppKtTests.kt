@@ -1,4 +1,4 @@
-package com.github.jbduncan.adventofcode2023.star6
+package com.github.jbduncan.adventofcode2023.star17
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Nested
@@ -21,22 +21,22 @@ class AppKtTests {
         inner class WhenRunningApp {
 
             @Test
-            fun thenItReturns467_835() {
+            fun thenItReturns6() {
                 val puzzleInput =
                     """
-                    467..114..
-                    ...*......
-                    ..35..633.
-                    ......#...
-                    617*......
-                    .....+.58.
-                    ..592.....
-                    ......755.
-                    ...${'$'}.*....
-                    .664.598..
+                    LR
+
+                    11A = (11B, XXX)
+                    11B = (XXX, 11Z)
+                    11Z = (11B, XXX)
+                    22A = (22B, XXX)
+                    22B = (22C, 22C)
+                    22C = (22Z, 22Z)
+                    22Z = (22B, 22B)
+                    XXX = (XXX, XXX)
                     """.trimIndent()
                 val out = executeAndReturnStdOut(puzzleInput)
-                assertThat(out).isEqualTo("467835")
+                assertThat(out).isEqualTo("6")
             }
         }
     }
